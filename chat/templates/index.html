@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chat App</title>
+    <style>
+        input { display: block; }
+        ul { list-style: none; }
+    </style>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <form id="chatbox">
+        <textarea></textarea>
+        <input type="submit" value="Send" />
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $(function() {
+            var socket = null;
+            var msgBox = $("#chatbox textarea");
+            var messages = $("#messages");
+            $("#chatbox").submit(function() {
+                if (!msgBox.val()) return false;
+                if (!socket) {
+                    alert("Error: There is no socket conncetion.")
+                    return false;
+                }
+                socket.send(msgBox.val());
+                msgBox.val("");
+                return false;
+            });
+            if (!window["WebSocket"]) {
+                alert("Error: Your browset does not support web sockets.")
+            } else {
+                socket = new WebSocket("ws://{{.Host}}/room");
+                socket.onclose = function() {
+                    alert("Connection has been closed. Sorry!");
+                }
+                socket.onmessage = function(e) {
+                    messages.append($("<li>").text(e.data))
+                }
+            }
+        });
+    </script>
+</body>
+</html>
