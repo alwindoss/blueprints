@@ -28,6 +28,7 @@ func main() {
 	log.Println("Starting Chat Server")
 	http.Handle("/", &templateHandler{fileName: "index.html"})
 	r := newRoom()
+	// r.tracer = tracer.New(os.Stdout)
 	http.Handle("/room", r)
 	go r.run()
 	if err := http.ListenAndServe(*addr, nil); err != nil {
